@@ -3,15 +3,8 @@
 namespace ShopZone.Api.DTOs.Products;
 
 public record ProductResponseDto(
-    int Id,
-    string Name,
-    string Sku,
-    string Description,
-    decimal Price,
-    int StockQuantity,
-    string ImageUrl,
-    int CategoryId,
-    string CategoryName
+    int Id, string Name, string Sku, string Description, decimal Price,
+    int StockQuantity, string ImageUrl, int CategoryId, string CategoryName
 );
 
 public record CreateProductDto(
