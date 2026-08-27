@@ -11,6 +11,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Cart> Carts => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -48,6 +50,32 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany()
                   .HasForeignKey(ci => ci.ProductId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Order>(entity =>
+        {
+            entity.Property(o => o.TotalAmount).HasColumnType("decimal(10,2)");
+            entity.Property(o => o.Status).HasConversion<string>();
+
+            entity.HasOne(o => o.User)
+                  .WithMany()
+                  .HasForeignKey(o => o.UserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<OrderItem>(entity =>
+        {
+            entity.Property(oi => oi.UnitPrice).HasColumnType("decimal(10,2)");
+
+            entity.HasOne(oi => oi.Order)
+                  .WithMany(o => o.OrderItems)
+                  .HasForeignKey(oi => oi.OrderId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(oi => oi.Product)
+                  .WithMany()
+                  .HasForeignKey(oi => oi.ProductId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }
