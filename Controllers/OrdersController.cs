@@ -83,4 +83,16 @@ public class OrdersController : ControllerBase
         order.Id, order.OrderDate, order.Status.ToString(), order.ShippingAddress, order.TotalAmount,
         order.OrderItems.Select(oi => new OrderItemResponseDto(oi.ProductId, oi.ProductName, oi.UnitPrice, oi.Quantity, oi.UnitPrice * oi.Quantity)).ToList()
     );
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetMyOrders()
+    {
+        var orders = await _db.Orders
+            .Include(o => o.OrderItems)
+            .Where(o => o.UserId == UserId)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+
+        return Ok(orders.Select(ToDto));
+    }
 }
